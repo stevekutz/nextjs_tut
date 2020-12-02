@@ -23,7 +23,7 @@
 
     - files that reside with the `pages` folder are automatically associated with a route based on the filename. Therefore, every page becomes a file which itself is a React Component
 
-      - pages defined with square brackets represent dynamic routes(/pages/users/[id].js  >>  users/user/1 ,  users/user/2 , ...). Query parameters are merged into a path parameters that nextjs tries to match to a route
+      - pages defined with square brackets represent dynamic routes(/pages/users/[id].js  >>  users/user/1 ,  users/user/2 , ...). Query parameters are merged into a path parameters that nextjs tries to match to a route. The `/` route is associated with `pages/index.js`
 
     - Within a page, `props` and `dynamic routes` can be `pre-rendered`(e.g. data fetched at build time) using `getStaticProps` & `getStaticPaths` respectively
 
@@ -46,14 +46,66 @@
 
 3) Launch the default  `Next.js` app using  either:
    
-   ~~~ bash
-   npm run dev
-   ~~~
-
-    or 
+    ~~~ bash
+    npm run dev
+    ~~~
 
     ~~~ bash
     yarn dev
     ~~~
 
+##### Adding pages and links
+
+- use the nextjs `Link` component to do client-side navigation by wrapping `<a>` tags
+
+1) Modify the `pages/index.js` file:
+
+    ~~~ js
+    import Link from 'next/link'; //add this
+
+    ...
+    // Learn <a href="https://nextjs.org">Next.js!</a> // change this to
+
+    Read <Link href = "/posts/first-post"><a> this page </a></Link>   
+
+    ~~~
+
+   - NOTE: spaces around `Link` cause an unusual error:
+
+    <img src = "img_readme/React-Children-only_Error.png" width = "50%"/>
+
+  
+2) Create posts/first-post.js :
+
+    -nextjs will use `code splitting` to load only what is required for the page render
+    - in production, reactjs `prefetches` pages referenced in `Link` components
+   - NOTE: inclusion of pages/_app.js removes anchor tag formatting on first-post page
+
+        <img src = "img_readme/no_pages_a_formatting.png" width = "30%"/>
     
+    - If CSS is required, add using className to the `a` tag, NOT the `Link` tag
+    - Use `a` tags to link to external content
+
+    ~~~ js
+    import Link from 'next/link';
+
+    import Link from 'next/link';
+
+
+    export default function FirstPost() {
+        return (
+            <div>
+                <h1> First Post Page </h1>
+                <h2> 
+                    <Link href = "/">
+                        <a> Back to Home page </a>
+                    </Link>            
+                </h2> 
+            </div>
+
+        )
+    }
+
+    ~~~
+
+##### Styling 
