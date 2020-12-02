@@ -209,3 +209,194 @@
     
         `}</style>
     ~~~
+
+4) To create an avatar for the home page
+
+    - save an image to public/images
+
+    - append to `layout.module.css`
+
+        ~~~ css
+        .container {
+        max-width: 36rem;
+        padding: 0 1rem;
+        margin: 3rem auto 6rem;
+        }
+
+        .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        }
+
+        .headerImage {
+        width: 6rem;
+        height: 6rem;
+        }
+
+        .headerHomeImage {
+        width: 8rem;
+        height: 8rem;
+        }
+
+        .backToHome {
+        margin: 3rem 0 0;
+        }
+        ~~~
+
+    - create `styles.utils.module.css`
+
+        ~~~ css
+        .heading2Xl {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        font-weight: 800;
+        letter-spacing: -0.05rem;
+        margin: 1rem 0;
+        }
+
+        .headingXl {
+        font-size: 2rem;
+        line-height: 1.3;
+        font-weight: 800;
+        letter-spacing: -0.05rem;
+        margin: 1rem 0;
+        }
+
+        .headingLg {
+        font-size: 1.5rem;
+        line-height: 1.4;
+        margin: 1rem 0;
+        }
+
+        .headingMd {
+        font-size: 1.2rem;
+        line-height: 1.5;
+        }
+
+        .borderCircle {
+        border-radius: 9999px;
+        }
+
+        .colorInherit {
+        color: inherit;
+        }
+
+        .padding1px {
+        padding-top: 1px;
+        }
+
+        .list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        }
+
+        .listItem {
+        margin: 0 0 1.25rem;
+        }
+
+        .lightText {
+        color: #999;
+        }
+        ~~~
+
+
+    - update `layout.js`
+
+        ~~~ js
+        import Head from 'next/head'
+        import styles from './layout.module.css'
+        import utilStyles from '../styles/utils.module.css'
+        import Link from 'next/link'
+
+        const name = 'Nextjs Dude'
+        export const siteTitle = 'Next.js Sample Website'
+
+        export default function Layout({ children, home }) {
+        return (
+            <div className={styles.container}>
+            <Head>
+                <link rel="icon" href="/favicon.ico" />
+                <meta
+                name="description"
+                content="Learn how to build a personal website using Next.js"
+                />
+                <meta
+                property="og:image"
+                content={`https://og-image.now.sh/${encodeURI(
+                    siteTitle
+                )}.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg`}
+                />
+                <meta name="og:title" content={siteTitle} />
+                <meta name="twitter:card" content="summary_large_image" />
+            </Head>
+            <header className={styles.header}>
+                {home ? (
+                <>
+                    <img
+                    src="/images/avatar.jpg"
+                    className={`${styles.headerHomeImage} ${utilStyles.borderCircle}`}
+                    alt={name}
+                    />
+                    <h1 className={utilStyles.heading2Xl}>{name}</h1>
+                </>
+                ) : (
+                <>
+                    <Link href="/">
+                    <a>
+                        <img
+                        src="/images/avatar.jpg"
+                        className={`${styles.headerImage} ${utilStyles.borderCircle}`}
+                        alt={name}
+                        />
+                    </a>
+                    </Link>
+                    <h2 className={utilStyles.headingLg}>
+                    <Link href="/">
+                        <a className={utilStyles.colorInherit}>{name}</a>
+                    </Link>
+                    </h2>
+                </>
+                )}
+            </header>
+            <main>{children}</main>
+            {!home && (
+                <div className={styles.backToHome}>
+                <Link href="/">
+                    <a>← Back to home</a>
+                </Link>
+                </div>
+            )}
+            </div>
+        )
+        }
+        ~~~
+
+    - update `pages/index.js`    
+
+        ~~~ js
+            import Head from 'next/head'
+            import Layout, { siteTitle } from '../components/layout'
+            import utilStyles from '../styles/utils.module.css'
+
+            export default function Home() {
+            return (
+                <Layout home>
+                <Head>
+                    <title>{siteTitle}</title>
+                </Head>
+                <section className={utilStyles.headingMd}>
+                    <p> You know, if it wasn't for the existential terror of staring into a void of space, 
+                    I'd say I'm feeling better today. The infection's run its course, Thanks to the blue 
+                    meanie back there. World governments are in pieces. The parts that are still working 
+                    are trying to take a census. And it looks like he did... he did exactly what he said 
+                    he was gonna do. Thanos wiped out fifty percent, of all living creatures </p>
+                    <p>
+                    (This is a sample website - you’ll be building a site like this on{' '}
+                    <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
+                    </p>
+                </section>
+                </Layout>
+
+        ~~~
