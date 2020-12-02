@@ -108,4 +108,104 @@
 
     ~~~
 
-##### Styling 
+##### Assets, Metadata, CSS
+
+- nextjs serves static files from the `public` directory. The file referenced by `src="/vercel.svg"` exists within the `public` directory
+
+- the `Head` component is part of next.js. The tab of the first-psot page will display the title given to the `Head` component.
+
+    ~~~ js
+    import Head from 'next/head'
+
+    ...
+
+    <div>
+        <Head>
+            <title> First Post Title </title>            
+        </Head>
+
+        <h1> First Post Page </h1>
+
+    ~~~
+
+- nextjs supports the `CSS-in-JS` library `styled-jsx` that permits scoped styling. This means that other similarly referenced components do not inherit attributes as with typical CSS rules. Instead, unique classnames are generated for each JSX element
+
+1) Set up styling for first-post.js
+
+   - create `components/layout.module.css`
+
+        ~~~ js
+        .container {
+            max-width: 36rem;
+            padding: 0 1 rem;
+            margin: 3rem auto 6 rem;
+            border: 1px solid deeppink;
+        }
+        ~~~
+
+
+    - create `components/layout.js`
+        ~~~ js
+
+        import styles from './layout.module.css'
+
+        export default function Layout({children}) {
+            return <div className = {stylers.container}> {children} </div>
+        }
+        ~~~
+
+    - modify pages/first-post.js
+
+        ~~~ js
+        import Link from 'next/link'
+        import Head from 'next/head'
+        import Layout from '../../components/layout'
+
+
+        export default function FirstPost() {
+            return (
+                <Layout>
+                    <Head>
+                        <title> First Post Title </title>            
+                    </Head>
+
+                    <h1> First Post Page </h1>
+                    <h2> 
+                        <Link href = "/">
+                            <a> Back to Home page </a>
+                        </Link>            
+                    </h2> 
+                </Layout>
+
+            )
+
+        }
+        ~~~
+
+2) Global styling can be implemented by adding `_app.js` to the `pages` folder
+
+    - create `_app.js`
+    - the component name does not have to be MyApp
+
+        ~~~ js
+        import '../styles/globals.css'
+
+        function MyApp({ Component, pageProps }) {
+            return <Component {...pageProps} />
+        }
+
+        export default MyApp
+        ~~~
+
+
+
+3) Adding styled-jsx to index.js starts to cause attributes to override each other
+
+    ~~~ jsx
+        <style jsx>{`
+            .footerBack {
+            background-color: lightgray;
+        }
+    
+        `}</style>
+    ~~~
