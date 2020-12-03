@@ -416,7 +416,7 @@
 
 1) Create a `posts` folder in the project directory and add two files: 
 
-    - `YAML` front matter is contained within the `---` section of each file. This metadata that can be read using a library called `gray-matter`. `YAML` is a type of markup often noted for being easy to read and is often used in configuration files for servers, operations systems, app, etc.
+    - `YAML front matter` is contained within the `---` section of each file. This metadata that can be read using a library called `gray-matter`. `YAML` is a type of markup often noted for being easy to read and is often used in configuration files for servers, operations systems, app, etc.
     - Install `gray-metter` via the terminal `npm install gray-matter`
 
    - `pre-rendering.md`
@@ -461,4 +461,97 @@
 
         ~~~
 
-2)         
+2)  Create a `lib` folder and add the `posts.js` file
+
+- this will fetch and sort file system data for the app to `pre-render`      
+
+    ~~~ js
+    import fs from 'fs'  // A Node.js module for file-system operations
+    import path from 'path' // A Node.js module for navigating different OS file systems
+    import matter fromn 'gray-matter' // used to read YAML front matter
+
+
+    // The path.join() method joins all given path segments together 
+    // using the platform-specific separator as a delimiter, then normalizes the resulting path.
+    //    process.cwd() gets the current working directory
+    const postsDirectory = path.join(process.cwd(), 'posts')
+
+    export function getSortedPostsData() {
+        // Get the filenames from /posts MD files by reading dir contents synchronously, (blocks other code until done)
+        const fileNames = fs.readdirSync(postsDirectory)
+
+        // map into an array
+        const allPostsData = fileNames.map(fileName => {
+            // truncate .md suffix
+            //const id = fileName.replace(/\.md$/, '')
+            const id = fileName(0, fileName.length - 3)
+
+            // read markdown as a string
+            //          reads file contents synchronously (blocks other code until done)
+            const fullPath = path.join(postsDirectory, fileName)
+            const fileContents = fs.readFileSync(fullPath, 'utf8')
+
+            // let gray-matter parse post metadata section
+            const matterResult = matter(fileContents)
+
+            // merge data with id
+            return {
+                id, 
+                ...matterResult.data
+            }
+        })
+
+        // NOW, return sorted allPostsData
+        return allPostsData.sort((a,b) => {
+            if (a.date < b.date) {
+                return 1
+            } else {
+                return -1
+            }
+        })
+
+    }
+    ~~~
+
+
+3) Use `getStaticProps` to pass in posts data as props to the `Home` component of `pages/index.js`    
+
+- `getSortedPostsData()` is used to within `getStaticProps` to fetch data passed in as the prop `allPostsData` into the `Home` component 
+
+~~~ js
+...
+import {getSortedPostsData} from './lib/posts'
+
+export default function Home({allPostsData}) {
+  return (
+    <Layout home>
+
+
+        <section className = {`${utilStyles.headingMd} ${utilSytels.padding1px}`}>
+                <h2 className = {utilStyles.headingMd}></h2>
+                <ul className = {utilStyles.list}>
+                {allPostsData.map(({id, date, title}) => (
+                    <li className = {utilStyles.listItems} key = {id}>
+                    {title}
+                    <br/>
+                    {id}
+                    <br/>
+                    {date}
+                    </li>
+                ))}
+                </ul>      
+            </section>
+    </Layout>
+   )
+}
+
+export async function getStaticProps() {
+  const allPostsData = getSortedPostsData()
+  return {
+    props: {
+      allPostsData
+    }
+  }
+}
+~~~
+
