@@ -15,15 +15,15 @@
     ~~~
 
 
-   - the following file setup will be  created
+   - the following file setup is created
 
         <img src = "img_readme/orig_setup.png" width = "25%" >
 
 2) Key features:
 
-    - files that reside with the `pages` folder are automatically associated with a route based on the filename. Therefore, every page becomes a file which itself is a React Component
+    - files that reside with the `pages` folder are automatically associated with a route based on the filename. Therefore, every page becomes a file which itself is a React Component.
 
-      - pages defined with square brackets represent dynamic routes(/pages/users/[id].js  >>  users/user/1 ,  users/user/2 , ...). Query parameters are merged into a path parameters that nextjs tries to match to a route. The `/` route is associated with `pages/index.js`
+      - pages defined with square brackets represent dynamic routes(/pages/users/[id].js  >>  users/user/1 ,  users/user/2 , ...). Query parameters are merged into a path parameters that Next.js tries to match to a route. The `/` route is associated with `pages/index.js`
 
     - Within a page, `props` and `dynamic routes` can be `pre-rendered`(e.g. data fetched at build time) using `getStaticProps` & `getStaticPaths` respectively
 
@@ -38,11 +38,11 @@
         }
         ~~~
 
-    - `_document.js` allows appending styling functionality from a `css-in-js` styling library(e.g. Material-UI, Tailwind CSS, etc.) into the application's <html> & <body> tags. This essentially wraps the app with the styling framework to allow proper server side rendering.
+    - `_document.js` allows appending styling functionality from a `css-in-js` styling library(e.g. Material-UI, Tailwind CSS, etc.) into the application's <html> & <body> tags. This essentially wraps the app with the styling framework to allow proper server side rendering. Basically styles from the stying library are injected into the document when the page is loaded and during hydration/hot module reloading.
 
     - Files located within the `/api` folder get mapped to `/api/*` and behave as API endpoints
 
-    - Changes made to files that export only React components will quickly update the next.js development server. This means that changes will be reflected in the browser almost immediately. THis feature is called `Fast Refresh` and is enabled by default.
+    - Changes made to files that export only React components will quickly update the Next.js development server. This means that changes will be reflected in the browser almost immediately. THis feature is called `Fast Refresh` and is enabled by default.
 
 3) Launch the default  `Next.js` app using  either:
    
@@ -112,7 +112,7 @@
 
 - nextjs serves static files from the `public` directory. The file referenced by `src="/vercel.svg"` exists within the `public` directory
 
-- the `Head` component is part of next.js. The tab of the first-psot page will display the title given to the `Head` component.
+- the `Head` component is part of Next.js. The tab of the first-psot page will display the title given to the `Head` component.
 
     ~~~ js
     import Head from 'next/head'
@@ -400,3 +400,65 @@
                 </Layout>
 
         ~~~
+
+##### Handlinfg Data
+
+- `Next.js` implements `pre-rendering` HTML and the minimal amount of JavaScript(e.g. event handlers, etc.) for all pages as opposed to using the rendering from the browser as with `client-side` rendering. In fact, disabling JavaScript in your browser will not prevent the app from rendering pages as would happen with a simple React app.
+- Next.js defines two types of `pre-rendering`:
+    - Static Generation: generated at build time & reused on repeat requests(good whenever content is less likely to be updated)
+      - There are two types of Static Generation:
+          - Static Generation Without Data: fetching page data is not required at build time
+          - Static Generation With Data: data must be fetched at build time. Data is fetched asynchronously using `getStaticProps` at build time in production and passed in as page props.   
+    - SSR(Server-side rendering: generated at time of page request(good when page data is updated often)
+- In development mode, ALL pages are pre-rendered and `getStaticProps` is called for each page request
+- A 'hybrid' app uses both types of `pre-rendering`
+- When a page loads, all of the JavaScript code runs to create a dynamic and interactive page. This process is called `hydration`. Basically, this process will activate of the app's React components
+
+1) Create a `posts` folder in the project directory and add two files: 
+
+    - `YAML` front matter is contained within the `---` section of each file. This metadata that can be read using a library called `gray-matter`. `YAML` is a type of markup often noted for being easy to read and is often used in configuration files for servers, operations systems, app, etc.
+    - Install `gray-metter` via the terminal `npm install gray-matter`
+
+   - `pre-rendering.md`
+
+        ~~~ md
+        ---
+        title: 'Two Forms of Pre-rendering'
+        date: '2020-01-01'
+        ---
+
+        Next.js has two forms of pre-rendering: **Static Generation** and **Server-side Rendering**. The difference is in **when** it generates the HTML for a page.
+
+        - **Static Generation** is the pre-rendering method that generates the HTML at **build time**. The pre-rendered HTML is then _reused_ on each request.
+        - **Server-side Rendering** is the pre-rendering method that generates the HTML on **each request**.
+
+        Importantly, Next.js lets you **choose** which pre-rendering form to use for each page. You can create a "hybrid" Next.js app by using Static Generation for most pages and using Server-side Rendering for others.
+
+        ~~~
+
+    - `ssg,ssr.md`
+
+        ~~~ md
+        ---
+        title: 'When to Use Static Generation v.s. Server-side Rendering'
+        date: '2020-01-02'
+        ---
+
+        We recommend using **Static Generation** (with and without data) whenever possible because your page can be built once and served by CDN, which makes it much faster than having a server render the page on every request.
+
+        You can use Static Generation for many types of pages, including:
+
+        - Marketing pages
+        - Blog posts
+        - E-commerce product listings
+        - Help and documentation
+
+        You should ask yourself: "Can I pre-render this page **ahead** of a user's request?" If the answer is yes, then you should choose Static Generation.
+
+        On the other hand, Static Generation is **not** a good idea if you cannot pre-render a page ahead of a user's request. Maybe your page shows frequently updated data, and the page content changes on every request.
+
+        In that case, you can use **Server-Side Rendering**. It will be slower, but the pre-rendered page will always be up-to-date. Or you can skip pre-rendering and use client-side JavaScript to populate data.
+
+        ~~~
+
+2)         
