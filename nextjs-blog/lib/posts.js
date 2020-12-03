@@ -43,3 +43,42 @@ export function getSortedPostsData() {
     })
 
 }
+
+// this will get id values for a specific post page
+//              used by getStaticPaths in [id].js
+export function getAllPostIds () {
+    const fileNames = fs.readdirSync(postsDirectory)
+
+
+    return fileNames.map(fileName => {
+        return {
+            // MUST return an obj NOT a string for id
+            params: {
+                id: fileName.substr(0, fileName.length - 3)
+            //  id: fileName.replace(/\.md$/, '')
+            }
+        
+        }
+    
+    })
+
+}
+
+// this will get all page data that matches the id
+//              used by getStaticProps in [id].js
+
+export function getPostData(id) {
+    const fullPath = path.join(postsDirectory, `${id}.md`)
+    const fileContents = fs.readFileSync(fullPath, 'utf8')
+
+    // Use gray-matter to parse post metadata section for a given id
+    const matterResult = matter(fileContents)
+
+    // Merge id with corresponding data
+    return {
+        id,
+        ...matterResult.data
+    }
+
+
+}

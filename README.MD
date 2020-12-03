@@ -468,7 +468,7 @@
     ~~~ js
     import fs from 'fs'  // A Node.js module for file-system operations
     import path from 'path' // A Node.js module for navigating different OS file systems
-    import matter fromn 'gray-matter' // used to read YAML front matter
+    import matter from 'gray-matter' // used to read YAML front matter
 
 
     // The path.join() method joins all given path segments together 
@@ -516,42 +516,154 @@
 
 3) Use `getStaticProps` to pass in posts data as props to the `Home` component of `pages/index.js`    
 
-- `getSortedPostsData()` is used to within `getStaticProps` to fetch data passed in as the prop `allPostsData` into the `Home` component 
+   - `getSortedPostsData()` is used to within `getStaticProps` to fetch data passed in as the prop `allPostsData` into the `Home` component 
 
-~~~ js
-...
-import {getSortedPostsData} from './lib/posts'
+   ~~~ js
+   ...
+   import {getSortedPostsData} from './lib/posts'
 
-export default function Home({allPostsData}) {
-  return (
-    <Layout home>
+   export default function Home({allPostsData}) {
+     return (
+       <Layout home>
 
 
-        <section className = {`${utilStyles.headingMd} ${utilSytels.padding1px}`}>
-                <h2 className = {utilStyles.headingMd}></h2>
-                <ul className = {utilStyles.list}>
-                {allPostsData.map(({id, date, title}) => (
-                    <li className = {utilStyles.listItems} key = {id}>
-                    {title}
-                    <br/>
-                    {id}
-                    <br/>
-                    {date}
-                    </li>
-                ))}
-                </ul>      
-            </section>
-    </Layout>
-   )
-}
+           <section className = {`${utilStyles.headingMd} ${utilSytels.padding1px}`}>
+                   <h2 className = {utilStyles.headingMd}></h2>
+                   <ul className = {utilStyles.list}>
+                   {allPostsData.map(({id, date, title}) => (
+                       <li className = {utilStyles.listItems} key = {id}>
+                       {title}
+                       <br/>
+                       {id}
+                       <br/>
+                       {date}
+                       </li>
+                   ))}
+                   </ul>      
+               </section>
+       </Layout>
+      )
+   }
 
-export async function getStaticProps() {
-  const allPostsData = getSortedPostsData()
-  return {
-    props: {
-      allPostsData
+   export async function getStaticProps() {
+     const allPostsData = getSortedPostsData()
+     return {
+       props: {
+         allPostsData
+       }
+     }
+   }
+   ~~~
+
+##### Dynamic Routes
+- Surrounding a page name with [ ] tells Next.js that this a dynamic route.
+- This page uses `getStaticPaths` to return an obj containing parameters that define specific routes(e.g. provides list a of id values as obj for `route posts/<id>`)
+- This page uses `getStaticProp`s` to provide the specific data to render the page
+
+- the `Layout` component is like a template for how pages rendered for the dynamic routes should look
+
+
+1) Add these functions to `pages/posts.js`
+
+    ~~~ js
+    // this will get id values for a specific post page
+    //              used by getStaticPaths in [id].js
+    export function getAllPostIds () {
+        const fileNames = fs.readdirSync(postsDirectory)
+
+
+        return fileNames.map(fileName => {
+            return {
+                // MUST return an obj NOT a string for id
+                params: {
+                    id: fileName.substr(0, fileName.length - 3)
+                //  id: fileName.replace(/\.md$/, '')
+                }
+            
+            }
+        
+        })
+
     }
-  }
-}
-~~~
 
+    // this will get all page data that matches the id
+    //              used by getStaticProps in [id].js
+
+    export function getPostData(id) {
+        const fullPath = path.join(postsDirectory, `${id}.md`)
+        const fileContents = fs.readFileSync(fullPath, 'utf8')
+
+        // Use gray-matter to parse post metadata section for a given id
+        const matterResult = matter(fileContents)
+
+        // Merge id with corresponding data
+        return {
+            id,
+            ...matterResult.data
+        }
+    ~~~
+
+2) Create `posts/[id].js`    
+
+    - remember to pass in the prop `postData`
+
+    ~~~ js
+    import Layout from '../../components/layout'
+    import {getAllPostIds, getPostData} from '../../lib/posts'
+
+    // postData prop passed in from getStaticProps
+    export default function Post({postData}) {
+        
+        console.log('postData ', postData)    
+
+
+        return (
+            <Layout>
+                {postData.title}
+                <br/>
+                {postData.id}
+                <br/>
+                {postData.date}
+            </Layout>
+        )
+
+    }
+
+
+    // Must include getStatidPaths
+    export async function getStaticPaths() {
+        const paths = getAllPostIds()
+
+        console.log(">>> paths ", paths)    
+        // paths  [ { params: { id: 'pre-rendering' } }, { params: { id: 'ssg-ssr' } } ]
+
+
+        return {
+            paths, 
+            fallback: false
+        }
+
+    }
+
+    // Must also include getStaticProps
+    export async function getStaticProps({params}) {
+        console.log(" >>>>>> params ", params)
+        // >>>>>> params  { id: 'ssg-ssr' }
+        
+        const postData = getPostData(params.id)
+        console.log('getStatic ', postData)
+        // getStatic  {
+        // id: 'ssg-ssr',
+        // title: 'When to Use Static Generation v.s. Server-side Rendering',
+        // date: '2020-01-02'
+        // }
+
+
+        return {
+            props: {
+                postData
+            }
+        }
+
+}
+    ~~~
