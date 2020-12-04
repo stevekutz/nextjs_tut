@@ -2,7 +2,7 @@ import Layout from '../../components/layout'
 import {getAllPostIds, getPostData} from '../../lib/posts'
 
 // postData prop passed in from getStaticProps
-export default function Post(postData) {
+export default function Post({postData}) {
     
     console.log('postData ', postData)    
 
@@ -14,6 +14,9 @@ export default function Post(postData) {
             {postData.id}
             <br/>
             {postData.date}
+            <br/>
+            <div dangerouslySetInnerHTML = {{__html: postData.contentHtml}}/>
+
         </Layout>
     )
 
@@ -40,7 +43,7 @@ export async function getStaticProps({params}) {
     console.log(" >>>>>> params ", params)
     // >>>>>> params  { id: 'ssg-ssr' }
     
-    const postData = getPostData(params.id)
+    const postData = await getPostData(params.id)
     console.log('getStatic ', postData)
     // getStatic  {
     // id: 'ssg-ssr',

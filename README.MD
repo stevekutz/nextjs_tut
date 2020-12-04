@@ -30,7 +30,7 @@
 
     - `_app.js allows overrriding the `App` component which is used to initialize pages`
       - the current active page is represented by the `Component` prop and any props sent with the page. Navigating to a new page is representing by its unique `Component` prop.
-      - `pageProps` are any props preloaded via a Nextjs data fetching method
+      - `pageProps` are any props preloaded via a Next.js data fetching method
 
         ~~~ js
         function MyApp({ Component, pageProps }) {
@@ -56,7 +56,7 @@
 
 ##### Adding pages and links
 
-- use the nextjs `Link` component to do client-side navigation by wrapping `<a>` tags
+- use the Next.js `Link` component to do client-side navigation by wrapping `<a>` tags
 
 1) Modify the `pages/index.js` file:
 
@@ -77,8 +77,8 @@
   
 2) Create posts/first-post.js :
 
-    -nextjs will use `code splitting` to load only what is required for the page render
-    - in production, reactjs `prefetches` pages referenced in `Link` components
+    - Next.js will use `code splitting` to load only what is required for the page render
+    - in production, React.js `prefetches` pages referenced in `Link` components
    - NOTE: inclusion of pages/_app.js removes anchor tag formatting on first-post page
 
         <img src = "img_readme/no_pages_a_formatting.png" width = "30%"/>
@@ -110,9 +110,9 @@
 
 ##### Assets, Metadata, CSS
 
-- nextjs serves static files from the `public` directory. The file referenced by `src="/vercel.svg"` exists within the `public` directory
+- Next.js serves static files from the `public` directory. The file referenced by `src="/vercel.svg"` exists within the `public` directory
 
-- the `Head` component is part of Next.js. The tab of the first-psot page will display the title given to the `Head` component.
+- the `Head` component is part of Next.js. The tab of the first-post page will display the title given to the `Head` component.
 
     ~~~ js
     import Head from 'next/head'
@@ -128,7 +128,7 @@
 
     ~~~
 
-- nextjs supports the `CSS-in-JS` library `styled-jsx` that permits scoped styling. This means that other similarly referenced components do not inherit attributes as with typical CSS rules. Instead, unique classnames are generated for each JSX element
+- Next.js supports the `CSS-in-JS` library `styled-jsx` that permits scoped styling. This means that other similarly referenced components do not inherit attributes as with typical CSS rules. Instead, unique class names are generated for each JSX element
 
 1) Set up styling for first-post.js
 
@@ -518,48 +518,48 @@
 
    - `getSortedPostsData()` is used to within `getStaticProps` to fetch data passed in as the prop `allPostsData` into the `Home` component 
 
-   ~~~ js
-   ...
-   import {getSortedPostsData} from './lib/posts'
+     ~~~ js
+     ...
+     import {getSortedPostsData} from './lib/posts'
 
-   export default function Home({allPostsData}) {
-     return (
-       <Layout home>
+     export default function Home({allPostsData}) {
+        return (
+        <Layout home>
 
 
-           <section className = {`${utilStyles.headingMd} ${utilSytels.padding1px}`}>
-                   <h2 className = {utilStyles.headingMd}></h2>
-                   <ul className = {utilStyles.list}>
-                   {allPostsData.map(({id, date, title}) => (
-                       <li className = {utilStyles.listItems} key = {id}>
-                       {title}
-                       <br/>
-                       {id}
-                       <br/>
-                       {date}
-                       </li>
-                   ))}
-                   </ul>      
-               </section>
-       </Layout>
-      )
-   }
-
-   export async function getStaticProps() {
-     const allPostsData = getSortedPostsData()
-     return {
-       props: {
-         allPostsData
-       }
+            <section className = {`${utilStyles.headingMd} ${utilSytels.padding1px}`}>
+                    <h2 className = {utilStyles.headingMd}></h2>
+                    <ul className = {utilStyles.list}>
+                    {allPostsData.map(({id, date, title}) => (
+                        <li className = {utilStyles.listItems} key = {id}>
+                        {title}
+                        <br/>
+                        {id}
+                        <br/>
+                        {date}
+                        </li>
+                    ))}
+                    </ul>      
+                </section>
+        </Layout>
+        )
      }
-   }
-   ~~~
+
+     export async function getStaticProps() {
+        const allPostsData = getSortedPostsData()
+        return {
+        props: {
+            allPostsData
+        }
+        }
+     }
+     ~~~
 
 ##### Dynamic Routes
+
 - Surrounding a page name with [ ] tells Next.js that this a dynamic route.
 - This page uses `getStaticPaths` to return an obj containing parameters that define specific routes(e.g. provides list a of id values as obj for `route posts/<id>`)
-- This page uses `getStaticProp`s` to provide the specific data to render the page
-
+- This page uses `getStaticProps` to provide the specific data to render the page
 - the `Layout` component is like a template for how pages rendered for the dynamic routes should look
 
 
@@ -612,65 +612,128 @@
            - The `required` key is a boolean and returns a `404` message when set to false. Setting  to true is used for incrementally loading pages. The setting ``fallback: 'blocking'` is used to emulate the behavior  of SSR.
         - a `getStaticProps` function that returns a `props` obj that is serializable(e.g. can convert the format of an obj into a byte-stream string). This props obj is passed into the React component used to render the dynamic pages. 
 
-   - remember to `destructure` the `postData` prop passed in to the `Post` component(e.g. Post({postData}) NOT  Post(postData))
+   - Remember to `destructure` the `postData` prop passed in to the `Post` component(e.g. Post({postData}) NOT  Post(postData))
 
-    ~~~ js
-    import Layout from '../../components/layout'
-    import {getAllPostIds, getPostData} from '../../lib/posts'
+        ~~~ js
+        import Layout from '../../components/layout'
+        import {getAllPostIds, getPostData} from '../../lib/posts'
 
-    // postData prop passed in from getStaticProps
-    export default function Post({postData}) {
-        
-        console.log('postData ', postData)    
-
-
-        return (
-            <Layout>
-                {postData.title}
-                <br/>
-                {postData.id}
-                <br/>
-                {postData.date}
-            </Layout>
-        )
-
-    }
+        // postData prop passed in from getStaticProps
+        export default function Post({postData}) {
+            
+            console.log('postData ', postData)    
 
 
-    // Must include getStatidPaths
-    export async function getStaticPaths() {
-        const paths = getAllPostIds()
+            return (
+                <Layout>
+                    {postData.title}
+                    <br/>
+                    {postData.id}
+                    <br/>
+                    {postData.date}
+                </Layout>
+            )
 
-        console.log(">>> paths ", paths)    
-        // paths  [ { params: { id: 'pre-rendering' } }, { params: { id: 'ssg-ssr' } } ]
-
-
-        return {
-            paths, 
-            fallback: false // required
         }
 
-    }
 
-    // Must also include getStaticProps
-    export async function getStaticProps({params}) {
-        console.log(" >>>>>> params ", params)
-        // >>>>>> params  { id: 'ssg-ssr' }
-        
-        const postData = getPostData(params.id)
-        console.log('getStatic ', postData)
-        // getStatic  {
-        // id: 'ssg-ssr',
-        // title: 'When to Use Static Generation v.s. Server-side Rendering',
-        // date: '2020-01-02'
-        // }
+        // Must include getStatidPaths
+        export async function getStaticPaths() {
+            const paths = getAllPostIds()
+
+            console.log(">>> paths ", paths)    
+            // paths  [ { params: { id: 'pre-rendering' } }, { params: { id: 'ssg-ssr' } } ]
 
 
-        return {
-            props: {
-                postData
+            return {
+                paths, 
+                fallback: false // required
             }
+
         }
 
-    }
-    ~~~
+        // Must also include getStaticProps
+        export async function getStaticProps({params}) {
+            console.log(" >>>>>> params ", params)
+            // >>>>>> params  { id: 'ssg-ssr' }
+            
+            const postData = getPostData(params.id)
+            console.log('getStatic ', postData)
+            // getStatic  {
+            // id: 'ssg-ssr',
+            // title: 'When to Use Static Generation v.s. Server-side Rendering',
+            // date: '2020-01-02'
+            // }
+
+
+            return {
+                props: {
+                    postData
+                }
+            }
+
+        }
+        ~~~
+
+##### Displaying markdown in dynamically rendered pages
+
+content from the markdown file after the `YAML front matter` is parsed into lines of `HTML sentences` and then concatenated into a string of HTML. This HTML string is rendered from the `postData` prop passed into the `Post` component in [id].js
+
+<img src = "img_readme/parsed_markdown_html_string.png" width = "50%"/>
+
+1) Install `remark` and `remark-html` via `yarn add remarl remark-html`
+
+2) Modify `pages/posts.js`
+
+    - notice that `async` is added to the `getPostData` function
+  
+        ~~~ js
+        ...
+        import remark from 'remark'     // parse markdown
+        import html from 'remark-html'  // serializes Markdown as HTML
+        ...
+        export async function getPostData(id) {
+            const fullPath = path.join(postsDirectory, `${id}.md`)
+            const fileContents = fs.readFileSync(fullPath, 'utf8')
+
+            // Use gray-matter to parse post metadata section for a given id
+            const matterResult = matter(fileContents)
+
+            // the metadata is processed further 
+            // Use remark to convert the parsed markdown into HTML 
+            const processedContent = await remark()
+                .use(html)
+                .process(matterResult.content)
+
+            // console.log("\t processedContent", processedContent)        
+
+            // convert HTML to string
+            const contentHtml = processedContent.toString()
+            // console.log("\t contentHtml ", contentHtml)
+
+            // Merge id with corresponding data
+            return {
+                id,
+                contentHtml,
+                ...matterResult.data,
+            }
+
+        }
+        ~~~
+
+3) Modify [id].js  to render the parsed our markdown as HTML
+
+    - `dangerouslySetInnerHTML` is a special React syntax for displaying HTML from code. This can sometimes lead to XSS(Cross-site scripting) attacks if user data input from a site is used to generate HTML. A module called `DOMPurify can be used` to mitigate risks of XSS.
+
+        ~~~ js
+        <Layout>
+            {postData.title}
+            <br/>
+            {postData.id}
+            <br/>
+            {postData.date}
+            <br/>
+            <div dangerouslySetInnerHTML = {{__html: postData.contentHtml}}></div>
+
+        </Layout>
+        ~~~

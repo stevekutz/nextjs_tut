@@ -1,6 +1,8 @@
 import fs from 'fs'  // A Node.js module for file-system operations
 import path from 'path' // A Node.js module for navigating different OS file systems
 import matter from 'gray-matter' // used to read YAML front matter
+import remark from 'remark'     // parse markdown
+import html from 'remark-html'  // serializes Markdown as HTML
 
 
 // The path.join() method joins all given path segments together 
@@ -67,18 +69,30 @@ export function getAllPostIds () {
 // this will get all page data that matches the id
 //              used by getStaticProps in [id].js
 
-export function getPostData(id) {
+export async function getPostData(id) {
     const fullPath = path.join(postsDirectory, `${id}.md`)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
 
     // Use gray-matter to parse post metadata section for a given id
     const matterResult = matter(fileContents)
 
+    // the metadata is processed further 
+    // Use remark to convert the parsed markdown into HTML 
+    const processedContent = await remark()
+        .use(html)
+        .process(matterResult.content)
+
+    // console.log("\t processedContent", processedContent)        
+
+    // convert HTML to string
+    const contentHtml = processedContent.toString()
+    // console.log("\t contentHtml ", contentHtml)
+
     // Merge id with corresponding data
     return {
         id,
-        ...matterResult.data
+        contentHtml,
+        ...matterResult.data,
     }
-
 
 }
