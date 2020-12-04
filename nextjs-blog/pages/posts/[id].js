@@ -2,7 +2,7 @@ import Layout from '../../components/layout'
 import {getAllPostIds, getPostData} from '../../lib/posts'
 
 // postData prop passed in from getStaticProps
-export default function Post({postData}) {
+export default function Post(postData) {
     
     console.log('postData ', postData)    
 

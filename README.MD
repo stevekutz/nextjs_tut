@@ -603,9 +603,16 @@
         }
     ~~~
 
-2) Create `posts/[id].js`    
+2) Create `posts/[id].js` 
 
-    - remember to pass in the prop `postData`
+   - this files must include:
+        -  a React component that uses a prop returned from `getStaticProps`
+        -  a `getStaticPaths` function that returns an array of obj that must include  `path` & `required` keys. 
+           - The `path` key itself contains an array of obj that describe key-value pairs for page parameters. The obj will use the same key as the filename used within the square brackets of [`filename`].js For example, [`id`].js would correspond to a route parameters array obj keys of the form  {`id`: 1, `id`: 2, ...}
+           - The `required` key is a boolean and returns a `404` message when set to false. Setting  to true is used for incrementally loading pages. The setting ``fallback: 'blocking'` is used to emulate the behavior  of SSR.
+        - a `getStaticProps` function that returns a `props` obj that is serializable(e.g. can convert the format of an obj into a byte-stream string). This props obj is passed into the React component used to render the dynamic pages. 
+
+   - remember to `destructure` the `postData` prop passed in to the `Post` component(e.g. Post({postData}) NOT  Post(postData))
 
     ~~~ js
     import Layout from '../../components/layout'
@@ -640,7 +647,7 @@
 
         return {
             paths, 
-            fallback: false
+            fallback: false // required
         }
 
     }
@@ -665,5 +672,5 @@
             }
         }
 
-}
+    }
     ~~~
