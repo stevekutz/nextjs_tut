@@ -737,3 +737,54 @@ content from the markdown file after the `YAML front matter` is parsed into line
 
         </Layout>
         ~~~
+
+
+###### Enhancing Styling for Dynamic Pages        
+
+1) Create components/date.js
+
+    - install `date-fns` via `yarn install date-fns`
+
+        ~~~ js
+        import {parseISO, format} from 'date-fns'
+
+        export default function Date({dateString}) {
+            const date = parseISO(dateString)
+            return <time dateTime = {dateString}>{format(date, 'EEEEE LLLL d, yyyy')}</time>
+
+        }
+        ~~~
+
+2) Modify `posts/[id].js`
+
+    ~~~ js
+    ...
+    import Head from 'next/head'
+    import Date from '../../components/date'
+    import utilStyles from '../../styles/utils.modules.css'
+
+    // postData prop passed in from getStaticProps
+    export default function Post({postData}) {
+        
+        console.log('postData ', postData)    
+
+
+        return (
+            <Layout>
+                <Head>
+                    <title>postData.title</title>
+                </Head>
+                <article>
+                    <h1 className={utilStyles.headingXl}>{postData.title}</h1>
+                    <div className={utilStyles.lightText}>
+                    <Date dateString={postData.date} />
+                    </div>
+                    <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
+                </article>
+
+            </Layout>
+        )
+
+    }
+    ...
+    ~~~
