@@ -29,7 +29,7 @@ export default function Post({postData}) {
 }
 
 
-// Must include getStatidPaths
+// Must include getStaticPaths
 export async function getStaticPaths() {
     const paths = getAllPostIds()
 

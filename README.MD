@@ -42,7 +42,7 @@
 
     - Files located within the `/api` folder get mapped to `/api/*` and behave as API endpoints
 
-    - Changes made to files that export only React components will quickly update the Next.js development server. This means that changes will be reflected in the browser almost immediately. THis feature is called `Fast Refresh` and is enabled by default.
+    - Changes made to files that export only React components will quickly update the Next.js development server. This means that changes will be reflected in the browser almost immediately. This feature is called `Fast Refresh` and is enabled by default.
 
 3) Launch the default  `Next.js` app using  either:
    
@@ -401,7 +401,7 @@
 
         ~~~
 
-##### Handlinfg Data
+##### Handling Data
 
 - `Next.js` implements `pre-rendering` HTML and the minimal amount of JavaScript(e.g. event handlers, etc.) for all pages as opposed to using the rendering from the browser as with `client-side` rendering. In fact, disabling JavaScript in your browser will not prevent the app from rendering pages as would happen with a simple React app.
 - Next.js defines two types of `pre-rendering`:
@@ -605,7 +605,7 @@
 
 2) Create `posts/[id].js` 
 
-   - this files must include:
+   - this file must include:
         -  a React component that uses a prop returned from `getStaticProps`
         -  a `getStaticPaths` function that returns an array of obj that must include  `path` & `required` keys. 
            - The `path` key itself contains an array of obj that describe key-value pairs for page parameters. The obj will use the same key as the filename used within the square brackets of [`filename`].js For example, [`id`].js would correspond to a route parameters array obj keys of the form  {`id`: 1, `id`: 2, ...}
@@ -637,7 +637,7 @@
         }
 
 
-        // Must include getStatidPaths
+        // Must include getStaticPaths
         export async function getStaticPaths() {
             const paths = getAllPostIds()
 
@@ -677,9 +677,9 @@
 
 ##### Displaying markdown in dynamically rendered pages
 
-content from the markdown file after the `YAML front matter` is parsed into lines of `HTML sentences` and then concatenated into a string of HTML. This HTML string is rendered from the `postData` prop passed into the `Post` component in [id].js
+  - Content from the markdown file after the `YAML front matter` is parsed into lines of `HTML sentences` and then concatenated into a string of HTML. This HTML string is rendered from the `postData` prop passed into the `Post` component in [id].js
 
-<img src = "img_readme/parsed_markdown_html_string.png" width = "50%"/>
+    <img src = "img_readme/parsed_markdown_html_string.png" width = "50%"/>
 
 1) Install `remark` and `remark-html` via `yarn add remarl remark-html`
 
@@ -721,7 +721,7 @@ content from the markdown file after the `YAML front matter` is parsed into line
         }
         ~~~
 
-3) Modify [id].js  to render the parsed our markdown as HTML
+3) Modify [id].js  to render the parsed out markdown as HTML
 
     - `dangerouslySetInnerHTML` is a special React syntax for displaying HTML from code. This can sometimes lead to XSS(Cross-site scripting) attacks if user data input from a site is used to generate HTML. A module called `DOMPurify can be used` to mitigate risks of XSS.
 
